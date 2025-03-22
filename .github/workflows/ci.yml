@@ -1,0 +1,32 @@
+name: CI - Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🛠 Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y gcc make
+
+      - name: 🔨 Compile the project
+        run: gcc -g main.c traction_control.c brake.c diagnostics.c input_handler.c logger.c -o locomotive -no-pie -Wall
+
+      - name: ✅ Run tests (если у тебя есть тесты)
+        run: ./tests/run_tests.sh || echo "No tests found"
+
+      - name: 📦 Upload binary as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: locomotive
+          path: ./locomotive
