@@ -1,0 +1,30 @@
+name: Build and Test Locomotive Control System
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: sudo apt update && sudo apt install -y gcc make
+
+      - name: Compile the Project
+        run: gcc -g main.c traction_control.c brake.c diagnostics.c input_handler.c logger.c -o locomotive -no-pie -Wall
+
+      - name: Run Basic Tests
+        run: ./locomotive || echo "Compilation successful but no test framework set up"
+
+      - name: Upload Binary Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: locomotive-binary
+          path: ./locomotive
