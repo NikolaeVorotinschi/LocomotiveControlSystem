@@ -28,3 +28,14 @@ jobs:
         with:
           name: locomotive-binary
           path: ./locomotive
+      - name: Deploy to server 🚀
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: 192.168.1.14  # IP твоего сервера
+          username: gur        # Логин на сервере
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            cd /home/gur/LocomotiveControlSystem
+            git pull origin main
+            make build
+            sudo systemctl restart locomotive
